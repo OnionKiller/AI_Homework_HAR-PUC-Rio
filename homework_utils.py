@@ -24,3 +24,18 @@ def figure_from_histories(histories,test_matrice):
 
     plt.tight_layout()
     plt.show()
+
+
+def score_from_history(history):
+    return {
+    'accuracy': history.history['accuracy'][-1],
+    'validation_accuracy': history.history['val_accuracy'][-1],
+    'loss': history.history['loss'][-1],
+    'validation_loss': history.history['val_loss'][-1],
+    'mse': history.history['mean_squared_error'][-1],
+    'validation_mse': history.history['val_mean_squared_error'][-1]
+}
+
+def print_scores(score_dict):
+    for k,v in score_dict.items():
+        print(f"{k} = {v}")
