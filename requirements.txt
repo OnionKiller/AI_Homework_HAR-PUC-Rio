@@ -4,6 +4,10 @@
 #
 #    pip-compile --resolver=backtracking
 #
+absl-py==1.4.0
+    # via
+    #   tensorboard
+    #   tensorflow-intel
 anyio==3.6.2
     # via jupyter-server
 argon2-cffi==21.3.0
@@ -17,6 +21,8 @@ arrow==1.2.3
     # via isoduration
 asttokens==2.2.1
     # via stack-data
+astunparse==1.6.3
+    # via tensorflow-intel
 attrs==23.1.0
     # via
     #   jsonschema
@@ -27,6 +33,8 @@ beautifulsoup4==4.12.2
     # via nbconvert
 bleach==6.0.0
     # via nbconvert
+cachetools==5.3.0
+    # via google-auth
 certifi==2022.12.7
     # via requests
 cffi==1.15.1
@@ -41,6 +49,8 @@ comm==0.1.3
     # via ipykernel
 contourpy==1.0.7
     # via matplotlib
+cramjam==2.6.2
+    # via fastparquet
 cycler==0.11.0
     # via matplotlib
 debugpy==1.6.7
@@ -53,10 +63,32 @@ executing==1.2.0
     # via stack-data
 fastjsonschema==2.16.3
     # via nbformat
+fastparquet==2023.2.0
+    # via -r requirements.in
+flatbuffers==23.3.3
+    # via tensorflow-intel
 fonttools==4.39.3
     # via matplotlib
 fqdn==1.5.1
     # via jsonschema
+fsspec==2023.4.0
+    # via fastparquet
+gast==0.4.0
+    # via tensorflow-intel
+google-auth==2.17.3
+    # via
+    #   google-auth-oauthlib
+    #   tensorboard
+google-auth-oauthlib==1.0.0
+    # via tensorboard
+google-pasta==0.2.0
+    # via tensorflow-intel
+grpcio==1.54.0
+    # via
+    #   tensorboard
+    #   tensorflow-intel
+h5py==3.8.0
+    # via tensorflow-intel
 htmlmin==0.1.12
     # via ydata-profiling
 idna==3.4
@@ -90,6 +122,8 @@ ipywidgets==8.0.6
     # via jupyter
 isoduration==20.11.0
     # via jsonschema
+jax==0.4.8
+    # via tensorflow-intel
 jedi==0.18.2
     # via ipython
 jinja2==3.1.2
@@ -147,13 +181,18 @@ jupyterlab-pygments==0.2.2
 jupyterlab-widgets==3.0.7
     # via ipywidgets
 keras==2.12.0
-    # via -r requirements.in
+    # via tensorflow-intel
 kiwisolver==1.4.4
     # via matplotlib
+libclang==16.0.0
+    # via tensorflow-intel
+markdown==3.4.3
+    # via tensorboard
 markupsafe==2.1.2
     # via
     #   jinja2
     #   nbconvert
+    #   werkzeug
 matplotlib==3.6.3
     # via
     #   -r requirements.in
@@ -166,6 +205,8 @@ matplotlib-inline==0.1.6
     #   ipython
 mistune==2.0.5
     # via nbconvert
+ml-dtypes==0.1.0
+    # via jax
 multimethod==1.9.1
     # via
     #   visions
@@ -202,8 +243,13 @@ numpy==1.23.5
     # via
     #   -r requirements.in
     #   contourpy
+    #   fastparquet
+    #   h5py
     #   imagehash
+    #   jax
     #   matplotlib
+    #   ml-dtypes
+    #   opt-einsum
     #   pandas
     #   patsy
     #   phik
@@ -212,20 +258,32 @@ numpy==1.23.5
     #   scipy
     #   seaborn
     #   statsmodels
+    #   tensorboard
+    #   tensorflow-intel
     #   visions
     #   ydata-profiling
+oauthlib==3.2.2
+    # via requests-oauthlib
+opt-einsum==3.3.0
+    # via
+    #   jax
+    #   tensorflow-intel
 packaging==23.1
     # via
+    #   fastparquet
     #   ipykernel
     #   jupyter-server
     #   matplotlib
     #   nbconvert
     #   qtconsole
     #   qtpy
+    #   scikeras
     #   statsmodels
+    #   tensorflow-intel
 pandas==1.5.3
     # via
     #   -r requirements.in
+    #   fastparquet
     #   phik
     #   seaborn
     #   statsmodels
@@ -257,10 +315,20 @@ prompt-toolkit==3.0.38
     # via
     #   ipython
     #   jupyter-console
+protobuf==4.22.3
+    # via
+    #   tensorboard
+    #   tensorflow-intel
 psutil==5.9.5
     # via ipykernel
 pure-eval==0.2.2
     # via stack-data
+pyasn1==0.5.0
+    # via
+    #   pyasn1-modules
+    #   rsa
+pyasn1-modules==0.3.0
+    # via google-auth
 pycparser==2.21
     # via cffi
 pydantic==1.10.7
@@ -312,7 +380,12 @@ qtconsole==5.4.2
 qtpy==2.3.1
     # via qtconsole
 requests==2.28.2
-    # via ydata-profiling
+    # via
+    #   requests-oauthlib
+    #   tensorboard
+    #   ydata-profiling
+requests-oauthlib==1.3.1
+    # via google-auth-oauthlib
 rfc3339-validator==0.1.4
     # via
     #   jsonschema
@@ -321,11 +394,18 @@ rfc3986-validator==0.1.1
     # via
     #   jsonschema
     #   jupyter-events
-scikit-learn==1.2.2
+rsa==4.9
+    # via google-auth
+scikeras[tensorflow]==0.10.0
     # via -r requirements.in
+scikit-learn==1.2.2
+    # via
+    #   -r requirements.in
+    #   scikeras
 scipy==1.9.3
     # via
     #   imagehash
+    #   jax
     #   phik
     #   scikit-learn
     #   statsmodels
@@ -340,10 +420,14 @@ send2trash==1.8.0
 six==1.16.0
     # via
     #   asttokens
+    #   astunparse
     #   bleach
+    #   google-auth
+    #   google-pasta
     #   patsy
     #   python-dateutil
     #   rfc3339-validator
+    #   tensorflow-intel
 sniffio==1.3.0
     # via anyio
 soupsieve==2.4.1
@@ -354,6 +438,24 @@ statsmodels==0.13.5
     # via ydata-profiling
 tangled-up-in-unicode==0.2.0
     # via visions
+tensorboard==2.12.2
+    # via tensorflow-intel
+tensorboard-data-server==0.7.0
+    # via tensorboard
+tensorboard-plugin-wit==1.8.1
+    # via tensorboard
+tensorflow==2.12.0
+    # via
+    #   -r requirements.in
+    #   scikeras
+tensorflow-estimator==2.12.0
+    # via tensorflow-intel
+tensorflow-intel==2.12.0
+    # via tensorflow
+tensorflow-io-gcs-filesystem==0.31.0
+    # via tensorflow-intel
+termcolor==2.3.0
+    # via tensorflow-intel
 terminado==0.17.1
     # via
     #   jupyter-server
@@ -395,7 +497,9 @@ traitlets==5.9.0
 typeguard==2.13.3
     # via ydata-profiling
 typing-extensions==4.5.0
-    # via pydantic
+    # via
+    #   pydantic
+    #   tensorflow-intel
 uri-template==1.2.0
     # via jsonschema
 urllib3==1.26.15
@@ -412,7 +516,18 @@ webencodings==0.5.1
     #   tinycss2
 websocket-client==1.5.1
     # via jupyter-server
+werkzeug==2.2.3
+    # via tensorboard
+wheel==0.40.0
+    # via
+    #   astunparse
+    #   tensorboard
 widgetsnbextension==4.0.7
     # via ipywidgets
+wrapt==1.14.1
+    # via tensorflow-intel
 ydata-profiling==4.1.2
     # via -r requirements.in
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools

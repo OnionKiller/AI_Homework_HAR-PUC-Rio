@@ -1,7 +1,10 @@
 numpy
 pandas
 matplotlib
-keras
+tensorflow
 scikit-learn
 jupyter
 ydata-profiling
+fastparquet
+scikeras[tensorflow]
+tensorflow-gpu
