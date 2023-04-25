@@ -1,4 +1,7 @@
 import matplotlib.pyplot as plt #type: ignore
+import numpy as np
+from sklearn.model_selection import KFold, cross_validate #type: ignore
+from sklearn.pipeline import Pipeline #type: ignore
 
 def figure_from_histories(histories,test_matrice):
     # set up the figure
@@ -27,15 +30,31 @@ def figure_from_histories(histories,test_matrice):
 
 
 def score_from_history(history):
-    return {
-    'accuracy': history.history['accuracy'][-1],
-    'validation_accuracy': history.history['val_accuracy'][-1],
-    'loss': history.history['loss'][-1],
-    'validation_loss': history.history['val_loss'][-1],
-    'mse': history.history['mean_squared_error'][-1],
-    'validation_mse': history.history['val_mean_squared_error'][-1]
-}
+    return {k:v[-1] for k,v in history.history.items()}
 
-def print_scores(score_dict):
+def print_historical_scores(score_dict):
     for k,v in score_dict.items():
         print(f"{k} = {v}")
+
+def wrap_cross_validate(pipe:Pipeline,kf:KFold,x:np.ndarray,y:np.ndarray):
+    # Use cross_val_score to evaluate the pipeline on the data
+    scores = cross_validate(pipe, x, y,
+    cv=kf,
+    #n_jobs=2,
+    scoring=
+    {
+        'accuracy': 'accuracy',
+        'loss': 'neg_log_loss',
+        'mse': 'neg_mean_squared_error',
+    })
+    return scores
+
+def print_scores(scores):
+    ce_scores = scores['test_loss']
+    mse_scores = scores['test_mse']
+    acc_scores = scores['test_accuracy']
+
+    # Print the mean and standard deviation of the scores
+    print('Cross Entropy: {:.3f} (+/- {:.3f})'.format(-ce_scores.mean(), ce_scores.std()))
+    print('MSE: {:.3f} (+/- {:.3f})'.format(-mse_scores.mean(), mse_scores.std()))
+    print('Accuracy: {:.3f} (+/- {:.3f})'.format(acc_scores.mean(), acc_scores.std()))
