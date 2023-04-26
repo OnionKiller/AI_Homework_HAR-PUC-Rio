@@ -24,3 +24,7 @@ Tensorboard is set up, you can launch it with the following command, and then op
 ```bash
 tensorboard --logdir=logs/ --host localhost --port 8888
 ```
+
+#Results
+
+![Nice graph](/media/epoch_accuracy.png)
