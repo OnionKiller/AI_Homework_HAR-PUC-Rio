@@ -211,7 +211,7 @@ multimethod==1.9.1
     #   ydata-profiling
 nbclassic==0.5.5
     # via notebook
-nbclient==0.7.3
+nbclient==0.7.4
     # via nbconvert
 nbconvert==7.3.1
     # via
@@ -235,7 +235,7 @@ networkx==3.1
     # via visions
 notebook==6.5.4
     # via jupyter
-notebook-shim==0.2.2
+notebook-shim==0.2.3
     # via nbclassic
 numpy==1.23.5
     # via
@@ -299,7 +299,7 @@ pillow==9.5.0
     #   imagehash
     #   matplotlib
     #   visions
-platformdirs==3.2.0
+platformdirs==3.3.0
     # via jupyter-core
 prometheus-client==0.16.0
     # via
@@ -434,7 +434,9 @@ statsmodels==0.13.5
 tangled-up-in-unicode==0.2.0
     # via visions
 tensorboard==2.10.1
-    # via tensorflow
+    # via
+    #   -r requirements.in
+    #   tensorflow
 tensorboard-data-server==0.6.1
     # via tensorboard
 tensorboard-plugin-wit==1.8.1
@@ -509,7 +511,7 @@ webencodings==0.5.1
     #   tinycss2
 websocket-client==1.5.1
     # via jupyter-server
-werkzeug==2.2.3
+werkzeug==2.3.0
     # via tensorboard
 wheel==0.40.0
     # via
