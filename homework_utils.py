@@ -6,11 +6,13 @@ import logging
 from typing import Dict, List, Type
 import matplotlib.pyplot as plt #type: ignore
 import numpy as np
+import pandas as pd #type:ignore
 from sklearn.discriminant_analysis import StandardScaler #type:ignore
 from sklearn.model_selection import KFold, cross_validate #type: ignore
 from sklearn.pipeline import Pipeline #type: ignore
 import tensorflow as tf #type: ignore
 from tensorflow.keras.utils import to_categorical #type: ignore
+import seaborn as sns #type:ignore
 
 @dataclass
 class MatrixTestResult:
@@ -90,7 +92,7 @@ def run_test(testcase,model_creator,model_creator_params,x,y)->MatrixTestResult:
         log_fname = "checkpoints/"+create_file_name(testcase) + 'model.{epoch:02d}.h5'
         frequency = int(X.shape[0] / batch_size * 10) # save every 10 epochs
         my_callbacks = [
-            #tf.keras.callbacks.EarlyStopping(patience=2),
+            tf.keras.callbacks.EarlyStopping(patience=2),
             tf.keras.callbacks.ModelCheckpoint(filepath=log_fname,save_freq=frequency),
             tf.keras.callbacks.TensorBoard(
                 log_dir=f'./logs/{create_file_name(testcase)}_{i_fold}',
@@ -165,3 +167,61 @@ def print_scores(scores, validation_only = True):
     print('Validation MSE: {:.4f} (+/- {:.4f})'.format(np.absolute(mse_scores.mean()), mse_scores.std()))
     print('Validation Accuracy: {:.4f} (+/- {:.4f})'.format(acc_scores.mean(), acc_scores.std()))
 
+
+
+def visualisation_with_confidence(results:List[MatrixTestResult],metrics:List[str] = ["accuracy","loss"],validation_only = True):
+
+    df = pd.DataFrame( )
+
+    for result in results:
+        # Loop through the list of dictionaries and append to the DataFrame
+        testcase = result.testcase
+        df_l = pd.DataFrame()
+        for i, d in enumerate([I.history for I in result.histories]):
+            # Get the keys of the dictionary
+            keys = list(d.keys())
+            
+            # Create a new DataFrame for the current dictionary
+            df_d = pd.DataFrame(d)
+            
+            # Add columns for the run and epoch
+            df_d['run'] = i
+            df_d['epoch'] = df_d.index
+            
+            # Append to the main DataFrame
+            df_l = pd.concat([df_l,df_d], ignore_index=True)
+        df_l['testcase'] = str(testcase)
+        df = pd.concat([df,df_l], ignore_index=True)
+        
+    df = df.melt(id_vars=['epoch','run','testcase'])
+    df['validation'] = df['variable'].apply(lambda x : 'validation' if x[0:3] == 'val' else 'train')
+    df['variable'] = df.variable.apply(lambda x: x[4:] if x[0:3] == 'val' else x)
+    df = df.pivot(index=['epoch','run','testcase','validation'],columns=['variable'])
+    df.columns = df.columns.droplevel(0)
+    df = df.reset_index()
+    #print(df.columns)
+
+    if validation_only:
+        # Plot mean and variance
+        fig, axes = plt.subplots(nrows=len(metrics), ncols=1, figsize=(10, 12))
+        fig.suptitle('Validation results respective to epoch showing the results of the 5 fold CV')
+        for row,metric in enumerate(metrics):
+            if metric not in df.columns:
+                logging.error(f"Bad metric for visualisation: {metric} is not a column, SKIPPING....")
+                continue
+            df_l = df[df['validation']=='validation']
+            sns.lineplot(x=df['epoch'], y=df[metric], hue=df['testcase'], linewidth=2, errorbar="sd",ax=axes[row])
+            #sns.despine()
+            axes[row].set_title(f"{metric} (mean +- std)")
+    
+    else:
+        fig, axes = plt.subplots(nrows=len(results), ncols=len(metrics), figsize=(10, 12))
+        fig.suptitle('Results for all testcases, respective to epoch, showing the results of the 5 fold CV')
+        sns.despine()
+        for row,testcase in enumerate([I.testcase for I in results]):
+            for col,metric in enumerate(metrics):
+                if metric not in df.columns:
+                    logging.error(f"Bad metric for visualisation: {metric} is not a column, SKIPPING....")
+                    continue
+                sns.lineplot(x=df['epoch'], y=df[metric], hue=df['validation'], linewidth=2, errorbar="sd",ax=axes[row,col])
+                axes[row,col].set_title(f"{metric} (mean +- std)")
