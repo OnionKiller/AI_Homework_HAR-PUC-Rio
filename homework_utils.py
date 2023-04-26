@@ -1,18 +1,19 @@
-from dataclasses import dataclass, field
 import inspect
-from io import BytesIO
 import json
 import logging
-from typing import Dict, List, Type
-import matplotlib.pyplot as plt #type: ignore
+from dataclasses import dataclass, field
+from typing import Dict, List
+
+import matplotlib.pyplot as plt  # type: ignore
 import numpy as np
-import pandas as pd #type:ignore
-from sklearn.discriminant_analysis import StandardScaler #type:ignore
-from sklearn.model_selection import KFold, cross_validate #type: ignore
-from sklearn.pipeline import Pipeline #type: ignore
-import tensorflow as tf #type: ignore
-from tensorflow.keras.utils import to_categorical #type: ignore
-import seaborn as sns #type:ignore
+import pandas as pd  # type:ignore
+import seaborn as sns  # type:ignore
+import tensorflow as tf  # type: ignore
+from sklearn.discriminant_analysis import StandardScaler  # type:ignore
+from sklearn.model_selection import KFold, cross_validate  # type: ignore
+from sklearn.pipeline import Pipeline  # type: ignore
+from tensorflow.keras.utils import to_categorical  # type: ignore
+
 
 @dataclass
 class MatrixTestResult:
