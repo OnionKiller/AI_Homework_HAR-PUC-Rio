@@ -25,6 +25,9 @@ Tensorboard is set up, you can launch it with the following command, and then op
 tensorboard --logdir=logs/ --host localhost --port 8888
 ```
 
-# Results
+# Results 
 
-![Nice graph](/media/epoch_accuracy.png)
+| TensorBoard   |      Seaborn      |
+|----------|:-------------:|
+| ![Nice graph](/media/epoch_accuracy.png) | ![Nice graph](/media/hidden_layers_acc.png) |
+
