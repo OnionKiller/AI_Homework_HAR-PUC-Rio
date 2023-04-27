@@ -118,11 +118,55 @@ def run_test(testcase, model_creator, model_creator_params, x, y) -> MatrixTestR
     return r
 
 
+def run_test_with_external_validation(
+    testcase, model_creator, model_creator_params, x, y, xv, yv
+) -> MatrixTestResult:
+    def create_file_name(dict_obj):
+        json_str = json.dumps(dict_obj)
+        file_name = "".join(x if x.isalnum() else "" for x in json_str)
+        return file_name
+
+    r = MatrixTestResult(testcase)
+    X = x
+    Y = to_categorical(y)
+    Xv = xv
+    Yv = to_categorical(yv)
+
+    batch_size = 10**2
+
+    #lower resolution for memory saving
+    X = X.astype(np.float16)
+    Xv = Xv.astype(np.float16)
+
+    log_fname = "checkpoints/" + create_file_name(testcase) + "_externalval_model.{epoch:02d}.h5"
+    frequency = int(X.shape[0] / batch_size * 10)  # save every 10 epochs
+    my_callbacks = [
+        tf.keras.callbacks.EarlyStopping(patience=2),
+        tf.keras.callbacks.ModelCheckpoint(filepath=log_fname, save_freq=frequency),
+        tf.keras.callbacks.TensorBoard(
+            log_dir=f"./logs/{create_file_name(testcase)}_externalval",
+            histogram_freq=1,
+            # profile_batch='10,30'
+        ),
+    ]
+
+    tf.keras.backend.clear_session()
+    model = model_creator(**model_creator_params)
+    history = model.fit(
+        X,
+        Y,
+        epochs=50,
+        batch_size=batch_size,
+        validation_data=(Xv, Yv),
+        callbacks=my_callbacks,
+        verbose=0,
+    )
+    r.histories.append(history)
+    return r
+
+
 def wrap_test_case(
-    testcase_list,
-    create_modell,
-    x,
-    y,
+    testcase_list, create_modell, x, y, xv, yv
 ) -> List[MatrixTestResult]:
     if not inspect.isfunction(create_modell):
         raise ValueError("create_modell s not a function!")
@@ -138,7 +182,10 @@ def wrap_test_case(
         if len(unexpected_args) > 0:
             logging.warn(f"extra attributes detected: {unexpected_args}")
         create_args = {k: v for k, v in testcase.items() if k in attributes_whitelist}
-        res = run_test(testcase, create_modell, create_args, x, y)
+        if xv and yv:
+            res = run_test_with_external_validation(testcase, create_modell, create_args, x, y, xv, yv)
+        else:
+            res = run_test(testcase, create_modell, create_args, x, y)
         results.append(res)
 
     return results
