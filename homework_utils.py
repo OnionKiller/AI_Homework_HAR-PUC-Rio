@@ -2,6 +2,8 @@ import inspect
 import json
 import logging
 from dataclasses import dataclass, field
+import os
+import shutil
 from typing import Dict, List
 
 import matplotlib.pyplot as plt  # type: ignore
@@ -23,7 +25,7 @@ class MatrixTestResult:
 
 def figure_from_histories(histories, test_matrice):
     # set up the figure
-    fig, axes = plt.subplots(nrows=len(histories), ncols=2, figsize=(10, 12))
+    fig, axes = plt.subplots(nrows=len(histories), ncols=2, figsize=(11, 3*len(test_matrice)))
 
     # loop through the histories and plot each one
     for i, history in enumerate(histories):
@@ -93,11 +95,17 @@ def run_test(testcase, model_creator, model_creator_params, x, y) -> MatrixTestR
         Xv = StandardScaler().fit_transform(Xv).astype(np.float16)
         log_fname = "checkpoints/" + create_file_name(testcase) + "model.{epoch:02d}.h5"
         frequency = int(X.shape[0] / batch_size * 10)  # save every 10 epochs
+
+        log_dir = f"./logs/{create_file_name(testcase)}_externalval"
+        # Check if the folder exists
+        if os.path.exists(log_dir):
+            # If the folder exists, delete it
+            shutil.rmtree(log_dir)
         my_callbacks = [
             tf.keras.callbacks.EarlyStopping(patience=2),
             tf.keras.callbacks.ModelCheckpoint(filepath=log_fname, save_freq=frequency),
             tf.keras.callbacks.TensorBoard(
-                log_dir=f"./logs/{create_file_name(testcase)}_{i_fold}",
+                log_dir=log_dir,
                 histogram_freq=1,
                 # profile_batch='10,30'
             ),
@@ -140,11 +148,16 @@ def run_test_with_external_validation(
 
     log_fname = "checkpoints/" + create_file_name(testcase) + "_externalval_model.{epoch:02d}.h5"
     frequency = int(X.shape[0] / batch_size * 10)  # save every 10 epochs
+    log_dir = f"./logs/{create_file_name(testcase)}_externalval"
+    # Check if the folder exists
+    if os.path.exists(log_dir):
+        # If the folder exists, delete it
+        shutil.rmtree(log_dir)
     my_callbacks = [
-        tf.keras.callbacks.EarlyStopping(patience=2),
+        #tf.keras.callbacks.EarlyStopping(patience=2),
         tf.keras.callbacks.ModelCheckpoint(filepath=log_fname, save_freq=frequency),
         tf.keras.callbacks.TensorBoard(
-            log_dir=f"./logs/{create_file_name(testcase)}_externalval",
+            log_dir=log_dir,
             histogram_freq=1,
             # profile_batch='10,30'
         ),
@@ -166,7 +179,7 @@ def run_test_with_external_validation(
 
 
 def wrap_test_case(
-    testcase_list, create_modell, x, y, xv, yv
+    testcase_list, create_modell, x, y, xv = None, yv = None
 ) -> List[MatrixTestResult]:
     if not inspect.isfunction(create_modell):
         raise ValueError("create_modell s not a function!")
@@ -182,7 +195,7 @@ def wrap_test_case(
         if len(unexpected_args) > 0:
             logging.warn(f"extra attributes detected: {unexpected_args}")
         create_args = {k: v for k, v in testcase.items() if k in attributes_whitelist}
-        if xv and yv:
+        if xv is not None and yv is not None:
             res = run_test_with_external_validation(testcase, create_modell, create_args, x, y, xv, yv)
         else:
             res = run_test(testcase, create_modell, create_args, x, y)
