@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 import json
 import logging
@@ -120,7 +122,7 @@ def run_test(testcase, model_creator, model_creator_params, x, y) -> MatrixTestR
             batch_size=batch_size,
             validation_data=(Xv, Yv),
             callbacks=my_callbacks,
-            verbose=0,
+            verbose=1,
         )
         r.histories.append(history)
     return r
@@ -172,7 +174,7 @@ def run_test_with_external_validation(
         batch_size=batch_size,
         validation_data=(Xv, Yv),
         callbacks=my_callbacks,
-        verbose=0,
+        verbose=1,
     )
     r.histories.append(history)
     return r
