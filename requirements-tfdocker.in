@@ -1,0 +1,9 @@
+numpy
+pandas
+matplotlib
+scikeras[tensorflow]
+tensorboard
+scikit-learn
+jupyter
+ydata-profiling
+fastparquet
